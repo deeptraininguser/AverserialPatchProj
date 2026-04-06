@@ -1,0 +1,101 @@
+# =============================================================
+# Complete Attack Pipeline Configuration
+# =============================================================
+
+# --- Environment ---
+# Whether to run on a remote machine (auto-detected if not set)
+# Set to null for auto-detection based on cwd
+on_remote: False
+# Project path used when running on a remote machine
+# remote_project_path: "/home/user/project/"
+
+# --- Classifier ---
+# Which classifier module to use for training.
+# Options: "classfier_mobilenet", "classfier_ensemble_v2", "classfier_ensemble", "classfier"
+classifier_train: "classfier_mobilenet"
+# Classifier used for dev/validation evaluation
+classifier_dev: "classfier"
+# Classifier used for test evaluation
+classifier_test: "classfier_test"
+
+# Ensemble weights (only used when classifier_train is an ensemble)
+ensemble_weights:
+  inception: 0.25
+  resnet: 0.25
+  vgg: 0.25
+  vit: 0.25
+  dino: 0.0
+
+# --- Comet ML (optional experiment tracking) ---
+comet:
+  enabled: true
+  # API key, project name, and workspace are read from .env file
+  # or can be overridden here:
+  # api_key: ""           # prefer .env: COMET_API_KEY
+  # project_name: ""      # prefer .env: COMET_PROJECT_NAME
+  # workspace: ""         # prefer .env: COMET_WORKSPACE
+
+# --- Training Hyperparameters ---
+training:
+  num_epochs: 100
+  learning_rate: 0.1
+  blend_ratio: 1.0
+  aug_weight_initial: 0.5
+  latent_variance: 0.8       # Std of initial random latent
+  gradient_clip_norm: 3.0
+  optimizer: "Adam"
+
+  # Loss weights
+  orig_class_loss_weight: 5.0
+  target_class_loss_weight: 3.0
+  orig_vs_target_ratio: 0.01  # weight for orig_loss vs target_loss
+
+  # Target classes (ImageNet indices). Empty list = untargeted attack
+  target_classes: []
+  
+  # Learning rate scheduler
+  scheduler:
+    enabled: false
+    type: "OneCycleLR"        # OneCycleLR | StepLR | CosineAnnealingLR
+    max_lr: 0.1
+    pct_start: 0.0
+    step_size: 50
+    gamma: 0.9
+
+  # Patch rejuvenation (replace worst patches with noisy copies of best patches)
+  rejuvenation:
+    enabled: false
+
+  # Augmentation probabilities
+  augmentation:
+    patch_jitter_prob: 0.7
+    augmentor_prob: 0.7
+    total_photo_jitter_prob: 0.7
+
+  # Early stopping
+  early_stopping:
+    aug_weight_threshold: 1.0
+    success_rate_threshold: 0.9
+
+  # Dataset
+  max_frames: 200             # Max frames to sample from captures
+  train_split: 0.8
+  val_split: 0.1
+  # test_split is 1 - train_split - val_split
+
+# --- Capture / Acquisition ---
+capture:
+  captures_dir: "captures_frames_multiview"
+  photometric_calibrations_dir: "./photometric_calibrations"
+  # Camera type: "ic4" for ImagingControl4 industrial camera, "webcam" for cv2.VideoCapture
+  camera_type: "ic4"
+  # URL for webcam (only used when camera_type is "webcam")
+  webcam_url: 0
+
+# --- Inference ---
+inference:
+  num_frames: 2400
+  infer_caps_dir: "./infer_caps_dir"
+
+# --- Results ---
+results_dir: "./results"

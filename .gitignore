@@ -1,0 +1,7 @@
+.env
+.history
+results
+__pycache__
+*.pyc
+captures_frames_multiview/*
+*.pkl

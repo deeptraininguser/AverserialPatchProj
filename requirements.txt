@@ -1,0 +1,32 @@
+# Core deep learning
+torch
+torchvision
+kornia
+diffusers
+
+# Computer vision (includes aruco support)
+opencv-contrib-python
+
+# Data & numerics
+numpy
+pandas
+
+# Visualization
+matplotlib
+
+# Progress bars
+tqdm
+
+# Configuration
+PyYAML
+python-dotenv
+
+# Jupyter / IPython
+ipython
+
+transformers
+# Experiment tracking (optional)
+# comet-ml
+
+# Camera hardware (optional – only needed for physical capture)
+# imagingcontrol4

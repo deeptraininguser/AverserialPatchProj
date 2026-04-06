@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rapidly Calibrated Projector-Based Physical Adversarial Patch Attacks</title>
+  <meta name="description"
+    content="Anonymous project page for a rapidly calibrated projector-camera adversarial attack pipeline." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <!-- ======== Hero ======== -->
+  <section class="hero">
+    <div class="container">
+      <h1>Rapidly Calibrated Projector-Based Physical Adversarial Patch Attacks</h1>
+      <h3 class="venue">ACM CCS 2026 — Under Review</h3>
+
+      <div class="authors">
+        <span class="author">Anonymous Authors</span>
+      </div>
+
+      <div class="links">
+        <a class="btn" href="#abstract">Abstract</a>
+        <a class="btn" href="#results">Results</a>
+        <a class="btn btn-outline" href="https://github.com/deeptraininguser/ProjPatchAttack" target="_blank">Code</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== Teaser ======== -->
+  <section class="section">
+    <div class="container">
+      <img class="full-img" src="assets/teaser.jpg"
+        alt="Projector-based adversarial attack on everyday objects across viewpoints" />
+      <p class="caption"><strong>Our method in action.</strong> A lightweight projection framework enables robust
+        adversarial attacks through rapid calibration <strong>(15 seconds, 33 patterns)</strong> and real-time
+        adaptation under viewpoint and scene changes.</p>
+    </div>
+  </section>
+
+  <!-- ======== Video ======== -->
+  <section class="section">
+    <div class="container">
+      <h2>Overview Video</h2>
+      <div class="video-wrap">
+        <video controls playsinline>
+          <source src="assets/demo_video.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== Abstract ======== -->
+  <section class="section" id="abstract">
+    <div class="container narrow">
+      <h2>Abstract</h2>
+      <p class="abstract-text">
+        Projector-based physical adversarial attacks offer a contact-free and reconfigurable way to manipulate camera
+        inputs, but prior work often either relies on lengthy calibration or overstates real-world generality. We
+        present a projector-camera attack pipeline for indoor settings with local planar, mostly diffuse target regions.
+        Our method uses 33 projected calibration patterns and less than 15 seconds of capture to fit a differentiable
+        per-pixel photometric model and an ArUco-based geometric mapping, then optimizes latent-space patches across
+        viewpoints, models, and sensor-like augmentations.
+      </p>
+      <p class="abstract-text">
+        Relative to the learned PCNet surrogate used by CAPAA, our results show lower reconstruction error
+        (0.077&plusmn;0.052 vs. 0.120&plusmn;0.062 RMSE), 33 rather than 500 calibration patterns, and under 1 second
+        rather than roughly 1800 seconds of simulator fitting on the same machine. In physical evaluation across five
+        objects and five novel viewpoints, combined attack success reaches 86.8% on seen models, 79.7% on a DINOv2-based
+        classifier, and 71.7% on unseen models; ablations show that removing simulation or multi-view training sharply
+        degrades performance.
+      </p>
+      <p class="abstract-text">
+        We do not claim outdoor viability or human imperceptibility. Instead, we frame the system as a credible indoor
+        white-box threat, state the assumptions explicitly, analyze failure modes, and discuss defenses such as
+        projection-aware training, temporal light-signature checks, and multi-view consistency tests.
+      </p>
+    </div>
+  </section>
+
+  <!-- ======== Pipeline ======== -->
+  <section class="section">
+    <div class="container">
+      <h2>Pipeline</h2>
+      <img class="full-img" src="assets/pipeline3.png" alt="Three-stage attack pipeline overview" />
+      <p class="caption">
+        <strong>Attack Pipeline.</strong>
+        <em>Left:</em> A patch location is selected and an ArUco marker is projected while capturing a short multi-view
+        video, followed by projecting 33 flat color patterns for photometric calibration.
+        <em>Middle:</em> A latent vector is optimized using a downstream classifier under attack by simulating how the
+        decoded patch would appear in camera-space under viewpoint changes and the full project-and-capture process.
+        <em>Right:</em> The optimized patch is projected onto the target, causing the downstream classifier to fail; the
+        attack is robust to viewpoint and object changes.
+      </p>
+    </div>
+  </section>
+
+  <!-- ======== Results ======== -->
+  <section class="section" id="results">
+    <div class="container">
+      <h2>Results</h2>
+
+      <h3>Simulator Fidelity</h3>
+      <img class="full-img" src="assets/sim_supp_small.jpg"
+        alt="Qualitative simulation comparison — projected patterns vs. captures vs. simulations" />
+      <p class="caption"><strong>Qualitative Simulation Results.</strong> Various patterns are <em>Projected</em> on a
+        surface and <em>Captured</em>. The process is simulated using <em>PCNet</em> (CAPAA) and <em>our affine
+          model</em>.</p>
+
+      <h3>Profiling</h3>
+      <table class="result-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Ours</th>
+            <th>CAPAA</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Calibration patterns</td>
+            <td>33</td>
+            <td>500</td>
+          </tr>
+          <tr>
+            <td>Simulator fitting time</td>
+            <td>&le; 1 s</td>
+            <td>~1,800 s</td>
+          </tr>
+          <tr>
+            <td>Optimization time</td>
+            <td>~750 s</td>
+            <td>~2,400 s</td>
+          </tr>
+          <tr>
+            <td>RMSE (held-out patterns)</td>
+            <td>0.077 &plusmn; 0.052</td>
+            <td>0.120 &plusmn; 0.062</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Physical Attack Success</h3>
+      <img class="full-img" src="assets/all_methods_comparison.png"
+        alt="Bar charts comparing attack success rates across five scenes" />
+      <p class="caption"><strong>Quantitative Comparisons.</strong> Attack success rates vs. CAPAA and a random Gaussian
+        baseline over 5 scenes and 5 novel viewpoints (20 captures per viewpoint). <em>Seen</em>: classifiers used
+        during optimization; <em>DINO</em>: DINOv2-ViT-L14; <em>Unseen</em>: 5 classifiers not used during optimization.
+      </p>
+
+      <table class="result-table">
+        <thead>
+          <tr>
+            <th>Evaluation Group</th>
+            <th>Success Rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Seen models (5 classifiers)</td>
+            <td>86.8%</td>
+          </tr>
+          <tr>
+            <td>DINOv2-ViT-L14</td>
+            <td>79.7%</td>
+          </tr>
+          <tr>
+            <td>Unseen models (5 classifiers)</td>
+            <td>71.7%</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Ablation Study</h3>
+      <table class="result-table">
+        <thead>
+          <tr>
+            <th>Configuration</th>
+            <th>Success Rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Without simulation</td>
+            <td>14.1% &plusmn; 0.3</td>
+          </tr>
+          <tr>
+            <td>Without multi-view training</td>
+            <td>2.6% &plusmn; 0.2</td>
+          </tr>
+          <tr>
+            <td>Without rejuvenation</td>
+            <td>97.5% &plusmn; 0.1</td>
+          </tr>
+          <tr>
+            <td>Without VAE prior</td>
+            <td>79.7% &plusmn; 0.4</td>
+          </tr>
+          <tr>
+            <td>Latent size 4&times;4</td>
+            <td>13.1% &plusmn; 0.3</td>
+          </tr>
+          <tr>
+            <td>Latent size 8&times;8</td>
+            <td>72.9% &plusmn; 0.4</td>
+          </tr>
+          <tr>
+            <td>Latent size 32&times;32</td>
+            <td>89.0% &plusmn; 0.3</td>
+          </tr>
+          <tr>
+            <td>Half physical patch size</td>
+            <td>49.2% &plusmn; 0.5</td>
+          </tr>
+          <tr>
+            <td><strong>Full system (16&times;16)</strong></td>
+            <td><strong>99.5% &plusmn; 0.1</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ======== Dynamic Scenario ======== -->
+  <section class="section">
+    <div class="container">
+      <h2>Dynamic Object Attack</h2>
+      <img class="full-img" src="assets/dynamic.jpg" alt="Dynamic attack on a moving remote-controlled vehicle" />
+      <p class="caption"><strong>Dynamic Scenario.</strong> The optimized patch is reprojected onto a moving
+        remote-controlled vehicle using real-time tracking (YOLOv11 + SIFT + RANSAC). The attack maintains alignment
+        under slow motion; effectiveness degrades under rapid movement.</p>
+    </div>
+  </section>
+
+  <!-- ======== Object Zoo ======== -->
+  <section class="section">
+    <div class="container">
+      <h2>Object Zoo</h2>
+      <p>The method is evaluated on five everyday objects from ImageNet classes. Different viewpoints of the scenes
+        under attack are shown, with predicted classes by individual classifiers.</p>
+      <img class="full-img" src="assets/zoo_grid.jpg"
+        alt="Qualitative results — five objects under four conditions across viewpoints" />
+    </div>
+  </section>
+
+  <!-- ======== Threat Model ======== -->
+  <section class="section">
+    <div class="container narrow">
+      <h2>Threat Model &amp; Defenses</h2>
+      <p class="abstract-text">
+        <strong>Scope.</strong> The attacker positions a video projector and camera indoors, projects onto a local,
+        approximately planar, mostly diffuse target region. White-box access to victim classifiers is assumed during
+        optimization. The attack explicitly excludes outdoor daylight, specular surfaces, arbitrary non-planar geometry,
+        and imperceptible projection.
+      </p>
+      <p class="abstract-text">
+        <strong>Defensive signatures.</strong> Projected adversarial attacks leave physical signatures that defenders
+        can exploit:
+        (1) temporal flicker from projector PWM;
+        (2) limited color gamut (projectors can only add light);
+        (3) viewpoint-dependent appearance inconsistencies;
+        (4) sensor-side random exposure/gain disruption;
+        (5) polarization filtering to separate projected from ambient light.
+      </p>
+    </div>
+  </section>
+
+  <!-- ======== Code ======== -->
+  <section class="section" id="code">
+    <div class="container narrow">
+      <h2>Code &amp; Data</h2>
+      <p class="abstract-text" style="text-align:center;">
+        The full attack pipeline (calibration, optimization, deployment) and evaluation scripts are available in the
+        anonymous repository below.
+      </p>
+      <div class="links" style="justify-content:center; margin-top:1rem;">
+        <a class="btn" href="https://github.com/deeptraininguser/ProjPatchAttack" target="_blank">GitHub Repository</a>
+      </div>
+      <h3 style="text-align:center;">Repository Structure</h3>
+      <table class="result-table" style="text-align:left;">
+        <thead>
+          <tr>
+            <th>File / Module</th>
+            <th>Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>config.yaml</code></td>
+            <td>All tuneable parameters &mdash; classifier choice, training hyper-parameters, paths, scheduler.</td>
+          </tr>
+          <tr>
+            <td><code>complete_attack.ipynb</code></td>
+            <td>Main notebook &mdash; runs the full pipeline end-to-end (Acquisition &rarr; Training &rarr; Inference).
+            </td>
+          </tr>
+          <tr>
+            <td><code>attack_config.py</code></td>
+            <td>Loads config &amp; environment, resolves runtime settings.</td>
+          </tr>
+          <tr>
+            <td><code>classifier_loader.py</code></td>
+            <td>Dynamically imports the classifier module specified in config.</td>
+          </tr>
+          <tr>
+            <td><code>data_preparation.py</code></td>
+            <td>Loads captured frames, detects ArUco markers, computes homographies, builds DataLoaders.</td>
+          </tr>
+          <tr>
+            <td><code>vae_utils.py</code></td>
+            <td>Stable Diffusion VAE helpers (encode / decode latents).</td>
+          </tr>
+          <tr>
+            <td><code>augmentation.py</code></td>
+            <td>Augmentation transforms and the differentiable <code>warp()</code> helper.</td>
+          </tr>
+          <tr>
+            <td><code>training.py</code></td>
+            <td>Main adversarial-patch training loop.</td>
+          </tr>
+          <tr>
+            <td><code>evaluation.py</code></td>
+            <td>Post-training CSV export (ablation metrics) and top-patch saving.</td>
+          </tr>
+          <tr>
+            <td><code>interp_comp_torch.py</code></td>
+            <td>Per-pixel photometric calibration model (affine simulator).</td>
+          </tr>
+          <tr>
+            <td><code>capture_utils_v2.py</code></td>
+            <td>Camera / projector capture utilities.</td>
+          </tr>
+          <tr>
+            <td><code>tracking_utils.py</code></td>
+            <td>ArUco-based tracking and projection helper.</td>
+          </tr>
+          <tr>
+            <td><code>aruco_pose.py</code></td>
+            <td>Camera-pose estimation from ArUco markers.</td>
+          </tr>
+          <tr>
+            <td><code>classfier_ensemble_v2.py</code></td>
+            <td>Ensemble classifier (ConvNeXt + EfficientNet + MobileNet + Swin).</td>
+          </tr>
+          <tr>
+            <td><code>classfier_mobilenet.py</code></td>
+            <td>MobileNet V3 Small classifier.</td>
+          </tr>
+          <tr>
+            <td><code>classfier.py</code></td>
+            <td>Inception V3 classifier.</td>
+          </tr>
+          <tr>
+            <td><code>classfier_test.py</code></td>
+            <td>EfficientNet B0 test classifier.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ======== BibTeX ======== -->
+  <section class="section bibtex-section">
+    <div class="container narrow">
+      <h2>BibTeX</h2>
+      <pre class="bibtex"><code>@inproceedings{anonymous2026projattack,
+  title     = {Rapidly Calibrated Projector-Based Physical
+               Adversarial Patch Attacks},
+  author    = {Anonymous},
+  booktitle = {Proceedings of the 2026 ACM SIGSAC Conference
+               on Computer and Communications Security (CCS)},
+  year      = {2026}
+}</code></pre>
+    </div>
+  </section>
+
+  <!-- ======== Footer ======== -->
+  <footer>
+    <div class="container narrow">
+      <p>
+        This page was built using the
+        <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page
+          Template</a>.
+        Licensed under
+        <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a>.
+      </p>
+    </div>
+  </footer>
+</body>
+
+</html>
