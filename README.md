@@ -2,6 +2,8 @@
 
 [![License: CC BY-NC 4.0](https://licensebuttons.net/l/by-nc/4.0/88x31.png)](https://creativecommons.org/licenses/by-nc/4.0/)
 
+🌐 **Project Page:** [https://deeptraininguser.github.io/ProjPatchAttack/](https://deeptraininguser.github.io/ProjPatchAttack/)
+
 This project implements a **projector-based physical adversarial patch attack** pipeline.  
 A latent-space patch is optimised to fool image classifiers when projected onto a real-world scene, then evaluated via live camera inference.
 
